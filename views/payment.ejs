@@ -1,0 +1,50 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container">
+  <h1>Payment for Booking</h1>
+
+  <p>
+    <strong>Selected Date:</strong> <%= new
+    Date(bookingData.bookingDate).toDateString() %>
+  </p>
+  <p><strong>Number of Guests:</strong> <%= bookingData.guests %></p>
+  <p><strong>Duration:</strong> <%= bookingData.duration %> days</p>
+  <p><strong>Price:</strong> ₹<%= totalPrice %></p>
+
+  <form
+    action="/bookings/payment/confirm/<%= bookingData.listingId %>"
+    method="POST"
+  >
+    <!-- Hidden inputs to carry booking info -->
+    <input
+      type="hidden"
+      name="bookingDate"
+      value="<%= bookingData.bookingDate %>"
+    />
+    <input type="hidden" name="guests" value="<%= bookingData.guests %>" />
+    <input type="hidden" name="duration" value="<%= bookingData.duration %>" />
+
+    <label for="cardNumber">Card Number:</label>
+    <input
+      type="text"
+      id="cardNumber"
+      name="cardNumber"
+      required
+      placeholder="Enter card number"
+    />
+
+    <label for="expiryDate">Expiry Date:</label>
+    <input
+      type="text"
+      id="expiryDate"
+      name="expiryDate"
+      required
+      placeholder="MM/YY"
+    />
+
+    <label for="cvv">CVV:</label>
+    <input type="text" id="cvv" name="cvv" required placeholder="CVV" />
+
+    <button type="submit">Pay Now</button>
+  </form>
+</div>

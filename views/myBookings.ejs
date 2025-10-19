@@ -1,0 +1,73 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container booking-list">
+  <h1>My Bookings</h1>
+
+  <% if (bookings.length === 0) { %>
+  <p>You have no bookings yet.</p>
+  <% } else { %>
+  <table>
+    <thead>
+      <tr>
+        <th>Listing</th>
+        <th>Date</th>
+        <th>Guests</th>
+        <th>Duration</th>
+        <th>Total Price</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% bookings.forEach(booking => { %>
+      <tr>
+        <td><%= booking.listingId.title %></td>
+        <td><%= new Date(booking.bookingDate).toDateString() %></td>
+        <td><%= booking.guests %></td>
+        <td><%= booking.duration %> days</td>
+        <td>
+          ₹<%= booking.guests * booking.duration * booking.listingId.price %>
+        </td>
+        <td><%= booking.isPaid ? "Successful" : "Failed" %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <% } %>
+</div>
+
+<style>
+  .booking-list {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    text-align: center;
+  }
+
+  th {
+    background: #ff5031;
+    color: white;
+  }
+
+  td {
+    background: #fff;
+  }
+</style>

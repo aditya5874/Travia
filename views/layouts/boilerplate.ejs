@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <title>Travia</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/preloader.css" />
+    <link rel="stylesheet" href="/css/translator.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/light_mode.css" />
+    <link rel="stylesheet" href="/css/dark_mode.css" />
+    <link rel="stylesheet" href="/css/review.css" />
+    <link rel="stylesheet" href="/css/contributor.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Mapbox -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+      /* ---------- Scrollbar ---------- */
+      ::-webkit-scrollbar {
+        width: 9px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #ff385c;
+        border-radius: 10px;
+      }
+      body {
+        scrollbar-width: thin;
+        scrollbar-color: red;
+      }
+
+      /* ---------- Cookie Consent ---------- */
+      #cookieConsent {
+        position: fixed;
+        bottom: 0;
+        left: 15%;
+        width: 70%;
+        background-color: #222;
+        color: #f1f1f1;
+        text-align: center;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        transition: transform 0.3s ease-in-out;
+        display: none;
+      }
+      #cookieConsent .cookie-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        align-items: center;
+      }
+      #cookieConsent a {
+        color: #00bfff;
+        text-decoration: underline;
+        transition: color 0.3s;
+      }
+      #cookieConsent a:hover {
+        color: #0099cc;
+      }
+      #cookieConsent button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+      #acceptCookies {
+        background-color: #4caf50;
+        color: white;
+      }
+      #acceptCookies:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+      }
+      #rejectCookies {
+        background-color: #f44336;
+        color: white;
+      }
+      #rejectCookies:hover {
+        background-color: #e53935;
+        transform: translateY(-2px);
+      }
+
+      /* ---------- Popup ---------- */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        backdrop-filter: blur(8px);
+        z-index: 9998;
+        display: none;
+        background: rgba(0, 0, 0, 0.35);
+      }
+      .password-box {
+        position: relative;
+        width: 100%;
+      }
+
+      .password-box input[type="password"],
+      .password-box input[type="text"] {
+        width: 100%;
+        padding-right: 42px; /* space for icon */
+        box-sizing: border-box;
+      }
+
+      /* Proper centered positioning */
+      .password-box .passwordToggler {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.85);
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      /* Adjust for different themes */
+      .light-mode .password-box .passwordToggler {
+        color: rgba(0, 0, 0, 0.55);
+      }
+
+      .dark-mode .password-box .passwordToggler {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      /* Optional: adjust smaller devices */
+      @media (max-width: 480px) {
+        .password-box .passwordToggler {
+          right: 10px;
+          font-size: 16px;
+        }
+      }
+
+      .popup-container {
+        width: 850px;
+        max-width: 95%;
+        height: 540px;
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        background: url("bg.png") center/cover no-repeat;
+        z-index: 9999;
+        align-items: stretch;
+        justify-content: center;
+        max-height: 90vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .close-icon {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.18);
+        padding: 6px;
+        border-radius: 50%;
+      }
+      .inner-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+      }
+      .left-side {
+        flex: 1;
+        padding: 60px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.03),
+          rgba(255, 255, 255, 0.02)
+        );
+        min-width: 300px;
+      }
+      .left-side h2 {
+        margin-bottom: 30px;
+        color: #fff;
+        font-weight: 800;
+        font-size: 32px;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      }
+      .left-side input.form-control {
+        margin-bottom: 20px;
+        padding: 14px;
+        background-color: rgba(255, 255, 255, 0.06);
+        color: #fff;
+        border: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        outline: none;
+        font-size: 16px;
+        border-radius: 6px;
+      }
+      .left-side input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .left-side input:focus {
+        border-bottom-color: #ff5a5f;
+        box-shadow: none;
+        color: #fff;
+      }
+      /* #togglePassword {
+        position: absolute;
+        top: 60%; 
+        right: 34px;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.85);
+        cursor: pointer;
+        line-height: 1;
+      } */
+
+      .btn-danger {
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(90deg, #ff6b76, #ff385c);
+        color: white;
+        margin-top: 6px;
+        box-shadow: 0 4px 14px rgba(255, 90, 95, 0.35);
+      }
+      .forgot-password {
+        margin-top: 12px;
+        text-align: right;
+      }
+      .forgot-password a {
+        color: #fff;
+        text-decoration: none;
+      }
+      .right-side {
+        flex: 1;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        min-width: 280px;
+        background: linear-gradient(
+          120deg,
+          rgba(0, 0, 0, 0.18),
+          rgba(0, 0, 0, 0.12)
+        );
+      }
+      .right-side h1 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+      }
+      .right-side p {
+        font-size: 16px;
+        line-height: 1.7;
+        max-width: 350px;
+        margin-bottom: 20px;
+      }
+      .sign-up-link {
+        color: #fff;
+        font-weight: 700;
+        text-decoration: underline;
+      }
+      .signup-mobile {
+        display: none;
+        color: #fff;
+        font-weight: 700;
+        text-decoration: underline;
+        margin-top: 16px;
+        text-align: center;
+      }
+
+      /* ---------- Responsive ---------- */
+      @media (max-width: 992px) {
+        .popup-container {
+          width: 92% !important;
+          max-width: 720px !important;
+          height: auto !important;
+          left: 50% !important;
+          top: 50% !important;
+          transform: translate(-50%, -50%) !important;
+          border-radius: 16px !important;
+          padding: 0 !important;
+        }
+        .inner-container {
+          flex-direction: column !important;
+        }
+        .left-side,
+        .right-side {
+          width: 100% !important;
+          padding: 24px !important;
+        }
+        .right-side {
+          display: none !important;
+        }
+        .signup-mobile {
+          display: block !important;
+        }
+        .left-side h2 {
+          font-size: 26px;
+          text-align: left;
+        }
+        #togglePassword {
+          right: 20px !important;
+          top: calc(50% + 4px) !important;
+        }
+        .close-icon {
+          top: 10px !important;
+          right: 10px !important;
+          font-size: 20px !important;
+          background: rgba(0, 0, 0, 0.25);
+        }
+      }
+      @media (max-width: 480px) {
+        .popup-container {
+          width: 96% !important;
+          max-width: 380px !important;
+          padding: 0 !important;
+        }
+        .left-side {
+          padding: 18px !important;
+        }
+        .left-side h2 {
+          font-size: 22px;
+          text-align: center;
+          margin-bottom: 18px;
+        }
+        .left-side input.form-control {
+          font-size: 15px;
+          padding: 12px;
+        }
+        .btn-danger {
+          width: 100%;
+          padding: 12px;
+          border-radius: 999px;
+        }
+        .forgot-password {
+          text-align: center;
+          margin-top: 12px;
+        }
+      }
+      /* Adjust Bootstrap's validation icons to not overlap the toggler */
+      .was-validated .form-control:valid,
+      .form-control.is-valid {
+        background-position: right 2.2rem center !important; /* push tick left */
+        padding-right: 2.8rem !important; /* ensure text doesn't overlap */
+      }
+
+      .was-validated .form-control:invalid,
+      .form-control.is-invalid {
+        background-position: right 2.2rem center !important;
+        padding-right: 2.8rem !important;
+      }
+    </style>
+  </head>
+
+  <body class="light-mode">
+    <!-- POPUP FORM -->
+    <div class="overlay" id="overlay"></div>
+
+    <div class="popup-container" id="popupContainer">
+      <div class="close-icon" onclick="closePopup()">
+        <i class="fas fa-times"></i>
+      </div>
+      <div class="inner-container">
+        <div class="left-side">
+          <h2>Welcome Back</h2>
+          <form
+            method="POST"
+            action="/login"
+            novalidate
+            class="needs-validation"
+          >
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Username not found</div>
+            <div class="password-box">
+              <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Password"
+                class="form-control"
+                required
+              />
+              <i
+                id="togglePassword"
+                class="passkey passwordToggler fa fa-eye"
+              ></i>
+            </div>
+
+            <button type="submit" class="btn btn-danger">Sign In</button>
+
+            <div class="forgot-password">
+              <a href="/forgot-password">Forgot Password?</a>
+            </div>
+            <div class="invalid-feedback">Password not found</div>
+          </form>
+
+          <!-- Signup link for mobile -->
+          <a href="/signup" class="signup-mobile">Sign Up Now</a>
+        </div>
+
+        <div class="right-side">
+          <h1>Join the Travia Adventure</h1>
+          <p>
+            Experience the world’s most stunning places. Your next adventure is
+            just a click away.
+          </p>
+          <a href="/signup" class="sign-up-link">Sign Up Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="loader"></div>
+      <span class="load"></span>
+    </div>
+
+    <%- include("../includes/navbar.ejs") %>
+
+    <div class="container">
+      <%- include("../includes/flash.ejs") %>
+      <div class="goto-top">
+        <i class="fa-solid fa-chevron-up"></i>
+      </div>
+      <%- body %>
+    </div>
+
+    <!-- Cookie Consent -->
+    <div id="cookieConsent">
+      <div class="cookie-content">
+        <p>
+          We use cookies to improve your experience. By continuing to use our
+          site, you accept our cookie policy.
+        </p>
+        <button id="acceptCookies">Accept</button>
+        <button id="rejectCookies">Reject</button>
+      </div>
+    </div>
+
+    <hr class="btw-foot" />
+    <%- include("../includes/footer.ejs") %>
+
+    <!-- Translator -->
+    <div class="gtranslate_wrapper"></div>
+
+    <!-- JS Scripts -->
+    <script>
+            const isLoggedIn = <%= isLoggedIn %>;
+
+            function showPopup() {
+              const popupContainer = document.getElementById("popupContainer");
+              const overlay = document.getElementById("overlay");
+              popupContainer.style.display = "flex";
+              overlay.style.display = "block";
+            }
+
+            function closePopup() {
+              const overlay = document.getElementById("overlay");
+              const popupContainer = document.getElementById("popupContainer");
+              overlay.style.display = "none";
+              popupContainer.style.display = "none";
+            }
+
+            if (!isLoggedIn) {
+              setInterval(() => {
+                showPopup();
+              }, 30000);
+            }
+
+
+
+            window.gtranslateSettings = {
+              default_language: "en",
+              detect_browser_language: true,
+              wrapper_selector: ".gtranslate_wrapper",
+            };
+
+            window.addEventListener("load", function () {
+              const consent = localStorage.getItem("cookieConsent");
+              if (!consent) document.getElementById("cookieConsent").style.display = "block";
+            });
+
+            document.getElementById("acceptCookies").onclick = function () {
+              localStorage.setItem("cookieConsent", "accepted");
+              document.getElementById("cookieConsent").style.display = "none";
+            };
+
+            document.getElementById("rejectCookies").onclick = function () {
+              localStorage.setItem("cookieConsent", "rejected");
+              document.getElementById("cookieConsent").style.display = "none";
+            };
+
+            document.addEventListener('click', function(e) {
+        const toggler = e.target.closest('.passwordToggler');
+        if (!toggler) return;
+
+        const input = toggler.closest('.password-box')?.querySelector('input');
+        if (!input) return;
+
+        const isPwd = input.type === 'password';
+        input.type = isPwd ? 'text' : 'password';
+
+        toggler.classList.toggle('fa-eye');
+        toggler.classList.toggle('fa-eye-slash');
+
+        input.focus({ preventScroll: true });
+      }, true);
+    </script>
+
+    <script
+      src="https://cdn.gtranslate.net/widgets/latest/float.js"
+      defer
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="/js/toggler.js"></script>
+    <script src="/js/contributor.js"></script>
+    <script>
+      window.embeddedChatbotConfig = {
+        chatbotId: "EBgF4sL8jWQQ9bOt-ni3n",
+        domain: "www.chatbase.co",
+      };
+    </script>
+    <script
+      src="https://www.chatbase.co/embed.min.js"
+      chatbotId="EBgF4sL8jWQQ9bOt-ni3n"
+      domain="www.chatbase.co"
+      defer
+    ></script>
+  </body>
+</html>
