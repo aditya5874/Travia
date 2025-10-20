@@ -120,7 +120,7 @@ We welcome contributions to help improve **TRAVIA**! 🚀 Here’s how you can g
    - In the root directory of the project, create a `.env` file and add the following variables:
      ```plaintext
      MAP_TOKEN=your-mapbox-access-token
-     ATLAS_DB_TOKEN=your-mongodb-connection-uri # mongodb://127.0.0.1:27017/wanderlust for running mongodb server locally
+     ATLAS_DB_TOKEN=your-mongodb-connection-uri # mongodb://127.0.0.1:27017/travia for running mongodb server locally
      SECRET=your-secret-key
      CLOUD_NAME=your-cloudinary-cloud-name
      CLOUD_API_KEY=your-cloudinary-api-key
@@ -206,3 +206,4 @@ For questions or feedback, feel free to reach out via GitHub issues or contact t
         <img src="https://img.shields.io/badge/Back%20to%20Top-000000?style=for-the-badge&logo=github&logoColor=white" alt="Back to Top">
     </a>
 </div>
+
